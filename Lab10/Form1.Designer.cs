@@ -160,7 +160,7 @@
             // 
             this.updNumSamples.Location = new System.Drawing.Point(196, 137);
             this.updNumSamples.Maximum = new decimal(new int[] {
-            1000,
+            50000,
             0,
             0,
             0});
@@ -344,7 +344,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chData.Series.Add(series1);
-            this.chData.Size = new System.Drawing.Size(408, 285);
+            this.chData.Size = new System.Drawing.Size(761, 285);
             this.chData.TabIndex = 1;
             this.chData.Text = "chart1";
             // 
@@ -353,7 +353,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(800, 342);
+            this.ClientSize = new System.Drawing.Size(1153, 342);
             this.Controls.Add(this.chData);
             this.Controls.Add(this.grpConfig);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

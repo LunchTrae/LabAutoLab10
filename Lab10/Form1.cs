@@ -37,7 +37,7 @@ namespace Lab10
             cboDevice.Items.AddRange(DaqSystem.Local.Devices);
             if (cboDevice.Items.Count > 0)
                 cboDevice.SelectedIndex = 0;
-            else MessageBox.Show("No devices available. Please connect a device!");
+            else MessageBox.Show("No devices available. Please connect a device!!!");
 
             cboTerminalConfig.SelectedIndex = 0;
             cboVoltageRange.SelectedIndex = 0;
@@ -48,7 +48,8 @@ namespace Lab10
             title.ForeColor = System.Drawing.Color.FromArgb(255, 0, 255);
 
             chData.ChartAreas[0].AxisX.Minimum = 0.0;
-            chData.ChartAreas[0].AxisY.Minimum = 0.0;
+            chData.ChartAreas[0].AxisY.Minimum = -10.5;
+            chData.ChartAreas[0].AxisY.Maximum = 10.5;
 
             chData.ChartAreas[0].AxisX.LabelStyle.Font = new System.Drawing.Font("Arial", 14, FontStyle.Bold);
             chData.ChartAreas[0].AxisY.LabelStyle.Font = new System.Drawing.Font("Arial", 14, FontStyle.Bold);
@@ -62,7 +63,7 @@ namespace Lab10
             chData.Legends[0].Docking = Docking.Right;
             chData.Legends[0].LegendStyle = LegendStyle.Table;
             chData.Legends[0].TableStyle = LegendTableStyle.Auto;
-            chData.Legends[0].Font = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
+            chData.Legends[0].Font = new System.Drawing.Font("Arial", 8, FontStyle.Bold);
 
             while (chData.Series.Count > 0) chData.Series.RemoveAt(0);
 
@@ -72,11 +73,20 @@ namespace Lab10
         {
             int numChannels = Convert.ToInt16(updHighChannel.Value) - Convert.ToInt16(updLowChannel.Value) + 1;
             decimal ADsampleRate = Convert.ToDecimal(numChannels * 1000.0);
+            double aquireTime;
             if (ADsampleRate > Convert.ToDecimal(A2D_MAXRATE))
             {
                 MessageBox.Show("Exceeding Max A2D Rate!");
             }
             updChannelSampleRate.Maximum = ADsampleRate;
+            aquireTime = Convert.ToDouble(updNumSamples.Value / updChannelSampleRate.Value);
+            if (aquireTime > 9.0)
+            {
+                updChannelSampleRate.Value = Convert.ToDecimal(Convert.ToDouble(updNumSamples.Value) / 9.0);
+                aquireTime = Convert.ToDouble(updNumSamples.Value / updChannelSampleRate.Value);
+            }
+            txtAquisitionTime.Text = aquireTime.ToString("#.##");
+            txtADRate.Text = ADsampleRate.ToString();
             
         }
 
@@ -96,7 +106,27 @@ namespace Lab10
 
         public void OnDataReady(IAsyncResult result)
         {
-            data = reader.EndReadMultiSample(result);
+            try
+            {
+                data = reader.EndReadMultiSample(result);
+                GraphData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void GraphData()
+        {
+            for (int i = Convert.ToInt32(updLowChannel.Value); i <= Convert.ToInt32(updHighChannel.Value); i++)
+            {
+                for (int j = 0; j < updNumSamples.Value; j++)
+                {
+                    chData.Series["Channel" + i.ToString()].Points.AddXY(j * (1 / updChannelSampleRate.Value), data[i, j]);
+                    //Application.DoEvents();
+                }
+            }
         }
 
         private void updLowChannel_ValueChanged(object sender, EventArgs e)
@@ -136,6 +166,8 @@ namespace Lab10
 
             try
             {
+                while (chData.Series.Count > 0) chData.Series.RemoveAt(0);
+
                 //Create Task
                 analogReadTask = new NationalInstruments.DAQmx.Task();
 
@@ -162,16 +194,6 @@ namespace Lab10
                 reader = new AnalogMultiChannelReader(analogReadTask.Stream);
                 reader.BeginReadMultiSample(Convert.ToInt32(updNumSamples.Value), OnDataReady, null);
 
-                //Add data to graph
-                for (int i = Convert.ToInt32(updLowChannel.Value); i <= Convert.ToInt32(updHighChannel.Value); i++)
-                {
-                    for (int j = 0;j < updNumSamples.Value; j++)
-                    {
-                        chData.Series["Channel" + i.ToString()].Points.AddXY(j * (1 / updChannelSampleRate.Value), data[i, j]);
-                        //Application.DoEvents();
-                    }
-                }
-                lblDevice.Text = data[5,3].ToString();
                 //Destroy Task
                 analogReadTask.Stop();
                 analogReadTask.Dispose();
