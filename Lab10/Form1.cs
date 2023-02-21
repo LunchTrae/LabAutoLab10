@@ -86,7 +86,7 @@ namespace Lab10
                 aquireTime = Convert.ToDouble(updNumSamples.Value / updChannelSampleRate.Value);
             }
             txtAquisitionTime.Text = aquireTime.ToString("#.##");
-            txtADRate.Text = ADsampleRate.ToString();
+            txtADRate.Text = (Convert.ToDouble(ADsampleRate) * numChannels / aquireTime).ToString("#.");
             
         }
 
