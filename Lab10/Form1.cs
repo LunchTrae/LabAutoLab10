@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace Lab10
 
             cboTerminalConfig.SelectedIndex = 0;
             cboVoltageRange.SelectedIndex = 0;
-
+            
             //Chart Setup
             Title title = chData.Titles.Add("Voltage vs Time");
             title.Font = new System.Drawing.Font("Arial", 24, FontStyle.Bold);
@@ -255,6 +256,71 @@ namespace Lab10
                 minVolt = -0.2;
                 maxVolt = 0.2;
             }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] lines;
+            openFD.InitialDirectory = "C:\\Users\\jenksiiija\\Documents\\JenksLabAutoLabs\\Lab13";
+            openFD.Title = "Open a Data File";
+            openFD.FileName = "";
+            openFD.Filter = "Text Files|*.csv|All Files|*.*";
+
+            if (openFD.ShowDialog() != DialogResult.Cancel)
+            {
+                while (chData.Series.Count > 0) chData.Series.RemoveAt(0);
+                double ymax = 0.0;
+                double ymin = 0.0;
+                lines = File.ReadAllLines(openFD.FileName);
+                int numCols = lines[0].Split(',').GetLength(0);
+                int numRows = lines.GetLength(0);
+                for (int i = 1; i < numCols; i++)
+                {
+                    chData.Series.Add(lines[3].Split(',')[i]);
+                }
+                for (int i = 0; i < numRows; i++)
+                {
+                    if (i > 3)
+                    {
+                        for (int j = 0; j < numCols - 1; j++)
+                        {
+                            chData.Series[j].Points.AddXY(lines[i].Split(',')[0], lines[i].Split(',')[j + 1]);
+                            if (Convert.ToDouble(lines[i].Split(',')[j+1]) > ymax)
+                            {
+                                ymax = Convert.ToDouble(lines[i].Split(',')[j + 1]);
+                            }
+                            if (Convert.ToDouble(lines[i].Split(',')[j + 1]) < ymin)
+                            {
+                                ymin = Convert.ToDouble(lines[i].Split(',')[j + 1]);
+                            }
+                        }
+                    }
+                }
+                //MessageBox.Show(ymin.ToString());
+                chData.ChartAreas[0].AxisY.Minimum = ymin - (0.05*(ymax - ymin));
+                chData.ChartAreas[0].AxisY.Maximum = ymax + (0.05 * (ymax - ymin));
+
+            }
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void appendToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Help Information BLah Blah Blahhhhh");
+        }
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
