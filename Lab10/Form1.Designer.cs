@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.grpConfig = new System.Windows.Forms.GroupBox();
             this.txtADRate = new System.Windows.Forms.TextBox();
@@ -348,16 +348,16 @@
             // 
             // chData
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chData.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chData.Legends.Add(legend2);
+            chartArea1.Name = "ChartArea1";
+            this.chData.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chData.Legends.Add(legend1);
             this.chData.Location = new System.Drawing.Point(380, 35);
             this.chData.Name = "chData";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chData.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chData.Series.Add(series1);
             this.chData.Size = new System.Drawing.Size(761, 285);
             this.chData.TabIndex = 1;
             this.chData.Text = "chart1";
@@ -416,7 +416,7 @@
             this.appendToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.appendToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.appendToolStripMenuItem.Text = "&Append";
-            this.appendToolStripMenuItem.Click += new System.EventHandler(this.appendToolStripMenuItem_Click);
+            this.appendToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 

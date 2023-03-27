@@ -124,7 +124,7 @@ namespace Lab10
             {
                 for (int j = 0; j < updNumSamples.Value; j++)
                 {
-                    chData.Series["Channel" + i.ToString()].Points.AddXY(j * (1 / updChannelSampleRate.Value), data[i, j]);
+                    chData.Series["Channel" + i.ToString()].Points.AddXY(j * (1 / updChannelSampleRate.Value), data[i - Convert.ToInt32(updLowChannel.Value), j]);
                     //Application.DoEvents();
                 }
             }
@@ -260,57 +260,109 @@ namespace Lab10
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string[] lines;
-            openFD.InitialDirectory = "C:\\Users\\jenksiiija\\Documents\\JenksLabAutoLabs\\Lab13";
-            openFD.Title = "Open a Data File";
-            openFD.FileName = "";
-            openFD.Filter = "Text Files|*.csv|All Files|*.*";
-
-            if (openFD.ShowDialog() != DialogResult.Cancel)
+            try
             {
-                while (chData.Series.Count > 0) chData.Series.RemoveAt(0);
-                double ymax = 0.0;
-                double ymin = 0.0;
-                lines = File.ReadAllLines(openFD.FileName);
-                int numCols = lines[0].Split(',').GetLength(0);
-                int numRows = lines.GetLength(0);
-                for (int i = 1; i < numCols; i++)
+                string[] lines;
+                openFD.InitialDirectory = "C:\\Users\\jenksiiija\\Documents\\JenksLabAutoLabs\\Lab13";
+                openFD.Title = "Open a Data File";
+                openFD.FileName = "";
+                openFD.Filter = "Text Files|*.csv|All Files|*.*";
+
+                if (openFD.ShowDialog() != DialogResult.Cancel)
                 {
-                    chData.Series.Add(lines[3].Split(',')[i]);
-                }
-                for (int i = 0; i < numRows; i++)
-                {
-                    if (i > 3)
+                    while (chData.Series.Count > 0) chData.Series.RemoveAt(0);
+                    double ymax = 0.0;
+                    double ymin = 0.0;
+                    lines = File.ReadAllLines(openFD.FileName);
+                    int numCols = lines[0].Split(',').GetLength(0);
+                    int numRows = lines.GetLength(0);
+                    for (int i = 1; i < numCols; i++)
                     {
-                        for (int j = 0; j < numCols - 1; j++)
+                        chData.Series.Add(lines[3].Split(',')[i]);
+                    }
+                    for (int i = 0; i < numRows; i++)
+                    {
+                        if (i > 3)
                         {
-                            chData.Series[j].Points.AddXY(lines[i].Split(',')[0], lines[i].Split(',')[j + 1]);
-                            if (Convert.ToDouble(lines[i].Split(',')[j+1]) > ymax)
+                            for (int j = 0; j < numCols - 1; j++)
                             {
-                                ymax = Convert.ToDouble(lines[i].Split(',')[j + 1]);
-                            }
-                            if (Convert.ToDouble(lines[i].Split(',')[j + 1]) < ymin)
-                            {
-                                ymin = Convert.ToDouble(lines[i].Split(',')[j + 1]);
+                                chData.Series[j].Points.AddXY(lines[i].Split(',')[0], lines[i].Split(',')[j + 1]);
+                                if (Convert.ToDouble(lines[i].Split(',')[j + 1]) > ymax)
+                                {
+                                    ymax = Convert.ToDouble(lines[i].Split(',')[j + 1]);
+                                }
+                                if (Convert.ToDouble(lines[i].Split(',')[j + 1]) < ymin)
+                                {
+                                    ymin = Convert.ToDouble(lines[i].Split(',')[j + 1]);
+                                }
                             }
                         }
                     }
-                }
-                //MessageBox.Show(ymin.ToString());
-                chData.ChartAreas[0].AxisY.Minimum = ymin - (0.05*(ymax - ymin));
-                chData.ChartAreas[0].AxisY.Maximum = ymax + (0.05 * (ymax - ymin));
+                    //MessageBox.Show(ymin.ToString());
+                    chData.ChartAreas[0].AxisY.Minimum = ymin - (0.05 * (ymax - ymin));
+                    chData.ChartAreas[0].AxisY.Maximum = ymax + (0.05 * (ymax - ymin));
 
+                }
+            }
+            catch(Exception ex) 
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            try
+            {
+                int numChannels = Convert.ToInt32(updHighChannel.Value) - Convert.ToInt32(updLowChannel.Value) + 1;
+                string[] fileLines;
+                System.IO.StreamWriter objWriter;
+
+                saveFD.InitialDirectory = "C:\\Users\\jenksiiija\\Documents\\JenksLabAutoLabs\\Lab13";
+                saveFD.Title = "Save a Data File";
+                saveFD.FileName = "";
+                saveFD.Filter = "Text Files|*.csv|All Files|*.*";
+                if (saveFD.ShowDialog() != DialogResult.Cancel)
+                {
+                    fileLines = new string[data.GetLength(1) + 4];
+                    fileLines[0] = "date," + DateTime.Now.ToString("d");
+                    fileLines[1] = "time," + DateTime.Now.ToString("T"); ;
+                    fileLines[2] = "# data points," + data.GetLength(1).ToString();
+                    fileLines[3] = "elapsed time";
+
+                    for (int i = 0; i < numChannels; i++)
+                    {
+                        fileLines[3] = fileLines[3] + ',' + chData.Series[i].ToString();
+                    }
+                    for (int i = 0; i < data.GetLength(1); i++)
+                    {
+                        fileLines[i+4] = (i * (1 / updChannelSampleRate.Value)).ToString();
+                        for (int j = 0; j < numChannels; j++)
+                        {
+                            fileLines[i+4] = fileLines[i+4] + ',' + data[j, i].ToString();
+                        }
+                    }
+                    if (sender.ToString() == "&New")
+                    {
+                        objWriter = new System.IO.StreamWriter(saveFD.FileName);
+                    }
+                    else
+                    {
+                        objWriter = new System.IO.StreamWriter(saveFD.FileName, true);
+                    }
+
+                    for (int i = 0; i < fileLines.GetLength(0); i++)
+                    {
+                        objWriter.WriteLine(fileLines[i]);
+                    }
+                    objWriter.Close();
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             
-        }
-
-        private void appendToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
