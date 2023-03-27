@@ -367,7 +367,15 @@ namespace Lab10
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Help Information BLah Blah Blahhhhh");
+            MessageBox.Show("Help Information\n\n\n" +
+                            "File Format:\n\n" +
+                            "All files must have the appropriate header. This includes the following:\n" +
+                            "'date', {date}\n" +
+                            "'time', {time}\n" +
+                            "'# data points', {#data}\n" +
+                            "elapsed time, channel 0, channel n\n" +
+                            "DATA,DATA\n\n" +
+                            "NOTE: Appended files cannot be opened as the second header does not fit the file format!");
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
