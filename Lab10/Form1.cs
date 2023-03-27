@@ -274,7 +274,7 @@ namespace Lab10
                     double ymax = 0.0;
                     double ymin = 0.0;
                     lines = File.ReadAllLines(openFD.FileName);
-                    int numCols = lines[0].Split(',').GetLength(0);
+                    int numCols = lines[5].Split(',').GetLength(0);
                     int numRows = lines.GetLength(0);
                     for (int i = 1; i < numCols; i++)
                     {
