@@ -162,6 +162,8 @@ namespace Lab10
         {
             int numChannels = Convert.ToInt16(updHighChannel.Value) - Convert.ToInt16(updLowChannel.Value) + 1;
             double[,] data = new double[numChannels, Convert.ToInt64(updNumSamples.Value)];
+            chData.ChartAreas[0].AxisY.Minimum = -10.5;
+            chData.ChartAreas[0].AxisY.Maximum = 10.5;
 
             SetControlEnable(false);
 
@@ -339,7 +341,7 @@ namespace Lab10
                         fileLines[i+4] = (i * (1 / updChannelSampleRate.Value)).ToString();
                         for (int j = 0; j < numChannels; j++)
                         {
-                            fileLines[i+4] = fileLines[i+4] + ',' + data[j, i].ToString();
+                            fileLines[i+4] = fileLines[i+4] + ',' + data[j, i].ToString("#.###");
                         }
                     }
                     if (sender.ToString() == "&New")
